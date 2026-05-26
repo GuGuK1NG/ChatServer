@@ -1,2 +1,2 @@
-编译方式 cmake ..
-make
+编译方式 build.sh
+
