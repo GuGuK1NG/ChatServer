@@ -164,6 +164,7 @@ void ChatService::reg(const TcpConnectionPtr &conn, json &js, Timestamp time)
         json response;
         response["msgid"] = REG_MSG_ACK;
         response["errno"] = 0;
+        response["name"] = name;
         response["id"] = user.getId();
         conn->send(response.dump());
     }
@@ -172,6 +173,7 @@ void ChatService::reg(const TcpConnectionPtr &conn, json &js, Timestamp time)
         json response;
         response["msgid"] = REG_MSG_ACK;
         response["errno"] = 1;
+        response["name"] = name;
         response["id"] = user.getId();
         conn->send(response.dump());
     }
