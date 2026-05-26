@@ -1,3 +1,0 @@
-camek ..
-make
-
