@@ -56,11 +56,14 @@ void ChatServer::onMessage(const TcpConnectionPtr &conn,
         }
 
         // json反序列化
-        json js = json::parse(buf);
-        // 通过js["msgid"] 获取一个业务handler来回调处理函数
-        auto msgHandler = ChatService::instance()->getHandler(js["msgid"].get<int>());
-        msgHandler(conn, js, time);
+        try{
+            json js = json::parse(buf);
+            // 通过js["msgid"] 获取一个业务handler来回调处理函数
+            auto msgHandler = ChatService::instance()->getHandler(js["msgid"].get<int>());
+            msgHandler(conn, js, time);
+        }catch(const std::exception& e){
+            LOG_ERROR << "json parse error: " << e.what();
+        }
     }
-    string buf = buffer->retrieveAllAsString();
     
 }
