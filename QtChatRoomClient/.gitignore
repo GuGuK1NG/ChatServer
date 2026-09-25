@@ -1,0 +1,46 @@
+# Qt Creator
+*.pro.user
+*.pro.user.*
+*.qmlproject.user
+*.qmlproject.user.*
+
+# 构建目录
+build/
+build-*/
+debug/
+release/
+*.Debug/
+*.Release/
+
+# 生成文件
+moc_*.cpp
+moc_*.h
+qrc_*.cpp
+ui_*.h
+*.o
+*.obj
+*.so
+*.dll
+*.a
+*.lib
+*.exe
+*.pdb
+
+# Qt 自动生成
+Makefile
+Makefile.*
+*.pro.autosave
+.qmake.stash
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+
+# 编辑器
+.vscode/
+.idea/
+*.swp
+*~
+
+# 日志
+debug.log
+out.txt
