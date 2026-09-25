@@ -48,7 +48,7 @@ ChatService::ChatService()
                            {
                                this->logout(conn, js, time);
                            }});
-
+    
     if (_redis.connect())
     {
         _redis.init_notify_handler(
@@ -83,7 +83,7 @@ void ChatService::login(const TcpConnectionPtr &conn, json &js, Timestamp time)
         {
             // success
             {
-                std::shared_lock<std::shared_mutex> lock(_connMutex);
+                std::unique_lock<std::shared_mutex> lock(_connMutex); 
                 _userConnMap.insert({id, conn});
                 _connUserMap.insert({conn, id});
             }
@@ -207,7 +207,7 @@ void ChatService::clientCloseException(const TcpConnectionPtr &conn)
     User user;
     int userId = -1;
     {
-        std::shared_lock<std::shared_mutex> lock(_connMutex);
+        std::unique_lock<std::shared_mutex> lock(_connMutex);
         auto it = _connUserMap.find(conn);
         if (it != _connUserMap.end())
         {
@@ -342,7 +342,7 @@ void ChatService::logout(const TcpConnectionPtr &conn, json &js, Timestamp time)
 {
     int userid = js["id"].get<int>();
     {
-        shared_lock<shared_mutex> lock(_connMutex);
+        unique_lock<shared_mutex> lock(_connMutex);
         _userConnMap.erase(userid);
         _connUserMap.erase(conn);
     }
