@@ -101,38 +101,41 @@ void ChatService::login(const TcpConnectionPtr &conn, json &js, Timestamp time)
             response["name"] = user.getName();
             // 查询是否有离线消息
             vector<string> vec = _offlineMsgModel.query(id);
-            if (!vec.empty())
+            vector<json> vec2;
+            for (const auto &s:vec)
             {
-                response["offlinemsg"] = vec;
+                
+                vec2.push_back(json::parse(s));
                 // 读取后删除
                 _offlineMsgModel.remove(id);
             }
+            response["offlinemsg"] = vec2;
             // 查询用户好友信息
             vector<User> userVec = _friendModel.query(id);
             if (!userVec.empty())
             {
-                vector<string> vec2;
+                vector<json> vec2;
                 for (User &user : userVec)
                 {
                     json js;
                     js["id"] = user.getId();
                     js["name"] = user.getName();
                     js["state"] = user.getState();
-                    vec2.push_back(js.dump());
+                    vec2.push_back(std::move(js));
                 }
                 response["friends"] = vec2;
             }
             vector<Group> groupvec = _groupModel.queryGroups(user.getId());
             if (!groupvec.empty())
             {
-                vector<string> vec2;
+                vector<json> vec2;
                 for (Group &group : groupvec)
                 {
                     json js;
                     js["groupid"] = group.getId();
                     js["groupname"] = group.getName();
                     js["groupdesc"] = group.getDesc();
-                    vec2.push_back(js.dump());
+                    vec2.push_back(std::move(js));
                 }
                 response["groups"] = vec2;
             }
@@ -173,6 +176,7 @@ void ChatService::reg(const TcpConnectionPtr &conn, json &js, Timestamp time)
         json response;
         response["msgid"] = REG_MSG_ACK;
         response["errno"] = 1;
+        response["errmsg"] = "用户名已被使用";
         response["name"] = name;
         response["id"] = user.getId();
         conn->send(response.dump());
