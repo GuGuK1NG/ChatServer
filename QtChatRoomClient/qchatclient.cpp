@@ -45,6 +45,15 @@ void QChatClient::sendlogin(const QString &name, const QString &pwd)
     write(packMsg(js));
 }
 
+void QChatClient::sendreg(const QString &name, const QString &pwd)
+{
+    QJsonObject js;
+    js["msgid"]=REG_MSG;
+    js["name"]=name;
+    js["password"]=pwd;
+    write(packMsg(js));
+}
+
 void QChatClient::sendlogout()
 {
     if(m_myId==-1){
@@ -122,7 +131,21 @@ void QChatClient::handleLoginAck(const QJsonObject &js)
     if (errno_ == 0) {
         m_myId = js["id"].toInt();
         m_myName = js["name"].toString();
-        // 这步先不解析 friends, 留到主界面那步
+
+        m_friends.clear();
+        const QJsonArray arr = js["friends"].toArray();
+        for(const QJsonValue &v:arr){
+            const QJsonDocument doc=QJsonDocument::fromJson(v.toString().toUtf8());
+            if(!doc.isObject()){
+                continue;
+            }
+            const QJsonObject obj =doc.object();
+            User u;
+            u.id    = obj["id"].toInt();
+            u.name  = obj["name"].toString();
+            u.state = obj["state"].toString();
+            m_friends.append(u);
+        }
     } else {
         m_myId = -1;
         m_myName.clear();
@@ -133,7 +156,10 @@ void QChatClient::handleLoginAck(const QJsonObject &js)
 
 void QChatClient::handleRegAck(const QJsonObject &js)
 {
-    emit regResult(js["errno"].toInt(), js["name"].toString(), js["id"].toInt());
+    const int errno_ = js["errno"].toInt();
+    const QString errmsg = js["errmsg"].toString();
+    emit regResult(errno_, errmsg);
+    //注册之后暂时先不自动登录
 }
 
 void QChatClient::handlePrivateChat(const QJsonObject &js){

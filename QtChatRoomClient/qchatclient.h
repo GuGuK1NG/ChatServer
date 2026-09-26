@@ -5,6 +5,7 @@
 #include <QTcpSocket>
 #include <QJsonObject>
 #include <QJsonDocument>
+#include <QJsonArray>
 #include <QByteArray>
 #include <QAbstractSocket>
 #include <QNetworkProxy>
@@ -18,6 +19,7 @@ public:
     void connectToServer(const QString &host,quint16 port);//连接服务器
     bool isReady() const;
     void sendlogin(const QString& name,const QString& pwd);
+    void sendreg(const QString& name,const QString& pwd);
     void sendlogout();
 
     int myId() const;
@@ -27,7 +29,7 @@ public:
 
 signals:
     void loginResult(int errno_, const QString &errmsg);
-    void regResult(int errno_, const QString &name, int id);
+    void regResult(int errno_, const QString &errmsg);
     void privateChatReceived(const ChatMessage &msg);
     void linkStateChanged(bool connected, const QString &text);
 private slots:
@@ -45,6 +47,7 @@ private:
     QByteArray m_buf;
     int m_myId = -1;
     QString m_myName;
+    QList<User> m_friends;
 };
 
 #endif // QCHATCLIENT_H
