@@ -5,6 +5,7 @@
 *.qmlproject.user.*
 
 # 构建目录
+.qtcreator/
 build/
 build-*/
 debug/

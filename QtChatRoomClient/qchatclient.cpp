@@ -8,7 +8,14 @@ QChatClient *QChatClient::instance()
     return client;
 }
 
-
+QChatClient::QChatClient(QObject *parent)
+    :QTcpSocket(parent)
+{
+    setProxy(QNetworkProxy::NoProxy); //Qt会自动使用代理，关闭先
+    connect(this, &QAbstractSocket::readyRead,    this, &QChatClient::onReadyRead);
+    connect(this, &QAbstractSocket::stateChanged, this, &QChatClient::onSocketStateChanged);
+    connect(this, &QAbstractSocket::errorOccurred, this, &QChatClient::onErrorOccurred);
+}
 
 
 
@@ -94,14 +101,7 @@ void QChatClient::onErrorOccurred(SocketError e)
     qDebug() << "socket 错误:" << e << errorString();
 }
 
-QChatClient::QChatClient(QObject *parent)
-    :QTcpSocket(parent)
-{
-    setProxy(QNetworkProxy::NoProxy); //Qt会自动使用代理，关闭先
-    connect(this, &QAbstractSocket::readyRead,    this, &QChatClient::onReadyRead);
-    connect(this, &QAbstractSocket::stateChanged, this, &QChatClient::onSocketStateChanged);
-    connect(this, &QAbstractSocket::errorOccurred, this, &QChatClient::onErrorOccurred);
-}
+
 
 void QChatClient::dispatch(const QJsonObject &js)
 {
